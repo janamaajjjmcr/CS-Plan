@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Interactive CS Study Plan</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+    }
+    .semester {
+      margin: 20px auto;
+      padding: 10px;
+      border: 1px solid #ccc;
+      background-color: #fff;
+      max-width: 900px;
+    }
+    .semester h2 {
+      text-align: center;
+      background-color: #0077b6;
+      color: white;
+      padding: 10px;
+      border-radius: 5px;
+    }
+    .courses {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+    }
+    .course {
+      width: 160px;
+      height: 100px;
+      border-radius: 8px;
+      padding: 10px;
+      box-sizing: border-box;
+      text-align: center;
+      cursor: pointer;
+      background-color: #e0e0e0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      transition: background-color 0.3s;
+    }
+    .course.completed {
+      background-color: #6ccf6c;
+      color: #000;
+    }
+    .course.locked {
+      background-color: #ccc;
+      color: #888;
+      cursor: not-allowed;
+    }
+    .progress-container {
+      width: 90%;
+      max-width: 800px;
+      margin: 30px auto;
+      background-color: #ddd;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .progress-bar {
+      height: 30px;
+      background-color: #0077b6;
+      color: white;
+      line-height: 30px;
+      text-align: center;
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+    .congrats {
+      text-align: center;
+      font-size: 24px;
+      color: green;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>Computer Science Study Plan</h1>
+  <div id="plan-container"></div>
+
+  <div class="progress-container">
+    <div class="progress-bar" id="progress-bar">0%</div>
+  </div>
+  <div class="congrats" id="congrats-message"></div>
+
+  <script>
+    const plan = [
+      {
+        year: 2, term: 3,
+        courses: [
+          { code: "SCI 101", name: "General Physics 1", prereq: [] },
+          { code: "CS230", name: "Object Oriented Programming", prereq: [] },
+          { code: "ENG103", name: "Technical Writing", prereq: [] },
+          { code: "MATH150", name: "Discrete Mathematics", prereq: [] },
+          { code: "CS231", name: "Digital Logic Design", prereq: [] },
+          { code: "ISLM101", name: "ISLAMIC FAITH", prereq: [] },
+        ]
+      },
+      {
+        year: 2, term: 4,
+        courses: [
+          { code: "SCI 201", name: "General Physics 2", prereq: ["SCI 101"] },
+          { code: "CS240", name: "Data Structure", prereq: ["CS230"] },
+          { code: "CS241", name: "Computer Architecture", prereq: ["CS231"] },
+          { code: "CS242", name: "Theory of Computing", prereq: ["CS230"] },
+          { code: "CS243", name: "Discrete Math for CS", prereq: ["MATH150"] },
+          { code: "ISLM102", name: "Ethics in Islam", prereq: [] },
+        ]
+      },
+      {
+        year: 3, term: 5,
+        courses: [
+          { code: "Math251", name: "Linear Algebra", prereq: ["MATH150"] },
+          { code: "CS350", name: "Intro to DB", prereq: ["CS240"] },
+          { code: "CS351", name: "Operating Systems", prereq: ["CS241"] },
+          { code: "CS352", name: "System Analysis", prereq: ["CS230"] },
+          { code: "CS353", name: "Design & Algo Analysis", prereq: ["CS240", "CS242"] },
+          { code: "ISLM103", name: "Islamic Economics", prereq: ["ISLM101"] },
+        ]
+      },
+      {
+        year: 3, term: 6,
+        courses: [
+          { code: "CS360", name: "Networks", prereq: ["CS351"] },
+          { code: "STAT101", name: "Statistics", prereq: ["MATH150"] },
+          { code: "CS361", name: "Web Programming", prereq: ["CS350"] },
+          { code: "CS362", name: "AI", prereq: ["CS353"] },
+          { code: "CS363", name: "Programming Languages", prereq: ["CS240"] },
+          { code: "CS364", name: "Computing Innovation", prereq: ["CS350"] },
+        ]
+      },
+      {
+        year: 4, term: 7,
+        courses: [
+          { code: "ISLM104", name: "Islamic Social System", prereq: ["ISLM102"] },
+          { code: "CS470", name: "HCI", prereq: ["CS352"] },
+          { code: "CS471", name: "Security", prereq: ["CS360"] },
+          { code: "CS479", name: "Senior Project 1", prereq: ["CS350", "CS352"] },
+        ]
+      },
+      {
+        year: 4, term: 8,
+        courses: [
+          { code: "CS489", name: "Senior Project 2", prereq: ["CS479"] },
+          { code: "CS480", name: "Project Management", prereq: ["CS352"] },
+          { code: "CS481", name: "Ethics in CS", prereq: [] },
+          { code: "CS499", name: "Training", prereq: ["CS360", "STAT101", "CS361", "CS362", "CS363", "CS364"] },
+        ]
+      },
+      {
+        year: 4, term: "Advanced App Dev Track",
+        courses: [
+          { code: "CS475", name: "Mobile Computing", prereq: ["CS363"] },
+          { code: "CS476", name: "Parallel and Distributed Computing", prereq: ["CS363"] },
+          { code: "CS477", name: "Compiler Design", prereq: ["CS363"] },
+          { code: "CS478", name: "Computer Graphics", prereq: ["CS363"] },
+        ]
+      },
+      {
+        year: 4, term: "Game Dev Track",
+        courses: [
+          { code: "CS485", name: "Game Architecture and Design", prereq: ["CS363"] },
+          { code: "CS486", name: "2D Game Programming", prereq: ["CS361"] },
+          { code: "CS487", name: "3D Game Programming", prereq: ["CS361"] },
+          { code: "CS488", name: "Game Artificial Intelligence", prereq: ["CS362"] },
+        ]
+      }
+    ];
+
+    const planContainer = document.getElementById("plan-container");
+    const progressBar = document.getElementById("progress-bar");
+    const congratsMessage = document.getElementById("congrats-message");
+
+    const completedCourses = JSON.parse(localStorage.getItem("completedCourses") || "[]");
+    const percentPerCourse = 2.8;
+
+    function saveProgress() {
+      localStorage.setItem("completedCourses", JSON.stringify(completedCourses));
+    }
+
+    function isUnlocked(course) {
+      return course.prereq.every(p => completedCourses.includes(p));
+    }
+
+    function updateProgressBar() {
+      const percent = Math.min((completedCourses.length * percentPerCourse), 100).toFixed(1);
+      progressBar.style.width = `${percent}%`;
+      progressBar.textContent = `${percent}%`;
+
+      if (percent >= 100) {
+        congratsMessage.textContent = "🎓 Congratulations! You have graduated!";
+      } else {
+        congratsMessage.textContent = "";
+      }
+    }
+
+    plan.forEach((semester) => {
+      const semDiv = document.createElement("div");
+      semDiv.className = "semester";
+      semDiv.innerHTML = `<h2>Year ${semester.year} - Term ${semester.term}</h2>`;
+
+      const courseContainer = document.createElement("div");
+      courseContainer.className = "courses";
+
+      semester.courses.forEach(course => {
+        const courseDiv = document.createElement("div");
+        courseDiv.className = "course";
+        courseDiv.textContent = `${course.code}\n${course.name}`;
+
+        if (!isUnlocked(course)) {
+          courseDiv.classList.add("locked");
+        } else if (completedCourses.includes(course.code)) {
+          courseDiv.classList.add("completed");
+        }
+
+        courseDiv.addEventListener("click", () => {
+          if (courseDiv.classList.contains("locked")) return;
+
+          const index = completedCourses.indexOf(course.code);
+          if (index > -1) {
+            completedCourses.splice(index, 1);
+            courseDiv.classList.remove("completed");
+          } else {
+            completedCourses.push(course.code);
+            courseDiv.classList.add("completed");
+          }
+
+          saveProgress();
+          updateProgressBar();
+          location.reload(); // To refresh locking/unlocking
+        });
+
+        courseContainer.appendChild(courseDiv);
+      });
+
+      semDiv.appendChild(courseContainer);
+      planContainer.appendChild(semDiv);
+    });
+
+    updateProgressBar();
+  </script>
+</body>
+</html>
